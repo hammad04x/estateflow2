@@ -1,36 +1,17 @@
-// utils/tokenCleanup.js
 const connection = require('../connection/connection');
 
-const blacklistExpiredToken = () => {
-  const now = new Date();
-  connection.query(
-    "UPDATE active_tokens SET is_blacklisted = 1 WHERE expires_at < ? AND is_blacklisted = 0",
-    [now],
-    (err, result) => {
-      if (err) {
-        console.error('Error blacklist Expired Token:', err);
-      } else {
-        console.log(`Black list ${result.affectedRows} expired tokens`);
-      }
-    }
-  );
-};
-const cleanUpExpiredToken = () => {
-  const now = new Date();
-  connection.query(
-    "DELETE FROM active_tokens WHERE is_blacklisted=1",
-    [now],
-    (err, result) => {
-      if (err) {
-        console.error('Error cleaning up expired tokens:', err);
-      } else {
-        console.log(`Cleaned up ${result.affectedRows} expired tokenss`);
-      }
-    }
-  );
-};
+function blacklistExpiredRefresh() {
+  connection.query('UPDATE active_tokens SET is_blacklisted = 1 WHERE refresh_expires_at < NOW() AND is_blacklisted = 0', (err, result) => {
+    if (err) return console.error('cleanup err', err);
+    if (result.affectedRows) console.log('Blacklisted expired refresh tokens:', result.affectedRows);
+  });
+}
 
-// Run cleanup every 5 minutes
-setInterval(blacklistExpiredToken, 5 * 60 * 1000);
+function deleteBlacklistedOlder() {
+  connection.query('DELETE FROM active_tokens WHERE is_blacklisted = 1 AND updated_at < DATE_SUB(NOW(), INTERVAL 7 DAY)', (err, result) => {
+    if (err) return console.error('cleanup delete err', err);
+    if (result.affectedRows) console.log('Deleted blacklisted tokens:', result.affectedRows);
+  });
+}
 
-module.exports = { cleanUpExpiredToken, blacklistExpiredToken };
+module.exports = { blacklistExpiredRefresh, deleteBlacklistedOlder };

@@ -1,50 +1,43 @@
-const jwt = require('jsonwebtoken');
-const connection = require('../connection/connection');
-const { ACCESS_TOKEN_SECRET } = require('../utils/jwtUtils');
+const jwt = require("jsonwebtoken");
+const connection = require("../connection/connection");
+const { ACCESS_SECRET } = require("../utils/jwt");
 
-// ALWAYS returns array
-function safeRoleParse(role) {
-  try {
-    const parsed = JSON.parse(role);    
-    return Array.isArray(parsed) ? parsed : [parsed];
-  } catch {
-    return [role];            
-  }
-}
-
-const verifyToken = (req, res, next) => {
+module.exports = (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const accessToken = authHeader && authHeader.split(" ")[1];
+  const ip = req.ip;
+  const userAgent = req.headers["user-agent"];
 
-  if (!token) {
+  if (!accessToken)
     return res.status(401).json({ error: "Access token required" });
-  }
 
-  jwt.verify(token, ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: "Invalid or expired token" });
-    }
+  jwt.verify(accessToken, ACCESS_SECRET, (err, decoded) => {
+    if (err)
+      return res.status(401).json({ error: "Invalid or expired access token" });
 
-    const { jti, id: userId, role } = decoded;
+    const sql = `
+      SELECT * FROM active_tokens
+      WHERE access_token=? 
+      AND user_id=?
+      AND ip_address=?
+      AND user_agent=?
+      AND is_blacklisted=0
+      LIMIT 1
+    `;
 
     connection.query(
-      "SELECT * FROM active_tokens WHERE token_id = ? AND user_id = ? AND is_blacklisted = 0",
-      [jti, userId],
-      (err, result) => {
-        if (err) return res.status(500).json({ error: "Database error" });
-        if (result.length === 0)
-          return res.status(401).json({ error: "Token invalidated" });
+      sql,
+      [accessToken, decoded.id, ip, userAgent],
+      (dbErr, rows) => {
+        if (dbErr) return res.status(500).json({ error: "DB error" });
+        if (!rows.length)
+          return res.status(401).json({ error: "Token session invalid" });
 
-        req.user = {
-          id: userId,
-          jti,
-          role: safeRoleParse(role),   // ALWAYS REAL ARRAY
-        };
+        // Attach user
+        req.user = decoded;
 
         next();
       }
     );
   });
 };
-
-module.exports = verifyToken;

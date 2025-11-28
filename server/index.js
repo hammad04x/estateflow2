@@ -4,34 +4,36 @@ const express = require("express");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const dotenv = require("dotenv");
-const propertiesRouter = require("./routes/properties/properties"); // adjust path
+const properties = require("./routes/properties/properties"); // adjust path
 
 dotenv.config();
 
 const port = process.env.PORT || 4500;
 const URL = process.env.URL || `http://localhost:${port}`;
 
+
+dotenv.config();
+const authRoutes = require('./routes/authRoutes/authRoutes');
+const { blacklistExpiredRefresh, deleteBlacklistedOlder } = require('./utils/tokenCleanup');
+
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyparser.json());
 app.use(express.urlencoded({ extended: true }));
 
-// serve uploads folder statically (so /uploads/<filename> works)
-const path = require("path");
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// mount auth routes at /auth
+app.use('/', authRoutes);
+app.use('/',properties)
 
-// mount routes at root (no /admin)
-app.use("/", propertiesRouter);
-
-connection.connect((error) => {
-  if (error) {
-    console.log("failed in connection", error);
-    process.exit(1);
-  } else {
-    console.log("database connected successfully");
-    app.listen(port, () => {
-      console.log(`server is running on ${URL}`);
-    });
-  }
+// server listen (pool already connects on module load)
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
+
+// run cleanup tasks every hour (after server up)
+setInterval(() => {
+  blacklistExpiredRefresh();
+  deleteBlacklistedOlder();
+}, 60 * 60 * 1000);

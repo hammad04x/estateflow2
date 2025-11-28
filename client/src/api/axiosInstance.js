@@ -37,7 +37,7 @@ api.interceptors.response.use(
 
         localStorage.setItem('accessToken', r.data.accessToken);
         // set new access token in original request and retry
-        originalRequest.headers.Authorization = Bearer `${r.data.accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${r.data.accessToken}`;
         return api(originalRequest);
       } catch (e) {
         // refresh failed => force logout on client
