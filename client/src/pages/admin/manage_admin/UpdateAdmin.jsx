@@ -4,9 +4,8 @@ import Sidebar from "../layout/Sidebar";
 import Navbar from "../layout/Navbar";
 import { MdSave } from "react-icons/md";
 import { HiXMark } from "react-icons/hi2";
-import axios from "axios";
+import api from "../../../api/axiosInstance";
 
-const API_BASE_URL = "http://localhost:4500";
 
 const EditAdmin = () => {
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ const EditAdmin = () => {
     const fetchRolesAndUserRoles = async () => {
       try {
         // 1) all roles
-        const rolesRes = await axios.get(`${API_BASE_URL}/roles`);
+        const rolesRes = await api.get(`/roles`);
         const allRoles = Array.isArray(rolesRes.data) ? rolesRes.data : [];
 
         // hide "admin" role from UI
@@ -56,8 +55,8 @@ const EditAdmin = () => {
         let userRoles = [];
 
         try {
-          const userRolesRes = await axios.get(
-            `${API_BASE_URL}/user-roles/${admin.id}`
+          const userRolesRes = await api.get(
+            `/user-roles/${admin.id}`
           );
           userRoles = Array.isArray(userRolesRes.data)
             ? userRolesRes.data
@@ -143,14 +142,14 @@ const EditAdmin = () => {
         formData.append("img", profileFile);
       }
 
-      await axios.put(`${API_BASE_URL}/users/${admin.id}`, formData);
+      await api.put(`/users/${admin.id}`, formData);
 
       // 2) update roles:
       // delete old users_roles mappings (only if they exist)
       if (existingUserRoles.length > 0) {
         await Promise.all(
           existingUserRoles.map((ur) =>
-            axios.delete(`${API_BASE_URL}/user-roles/${ur.id}`)
+            api.delete(`/user-roles/${ur.id}`)
           )
         );
       }
@@ -158,7 +157,7 @@ const EditAdmin = () => {
       // add new mappings
       await Promise.all(
         selectedRoleIds.map((roleId) =>
-          axios.post(`${API_BASE_URL}/user-roles`, {
+          api.post(`/user-roles`, {
             user_id: admin.id,
             role_id: roleId,
           })

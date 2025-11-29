@@ -13,9 +13,8 @@ import Navbar from "../layout/Navbar";
 import Breadcrumb from "../layout/Breadcrumb";
 import AdminProfile from "../../../assets/image/dash-profile.png";
 
-import axios from "axios";
+import api from "../../../api/axiosInstance";
 
-const API_BASE_URL = "http://localhost:4500";
 const PAGE_SIZE = 10;
 
 const ManageAdmin = () => {
@@ -31,7 +30,7 @@ const ManageAdmin = () => {
     const fetchAdmins = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE_URL}/users`);
+        const res = await api.get(`/users`);
         setAdmins(res.data || []);
       } catch (err) {
         console.error("Failed to fetch admins:", err);
@@ -49,7 +48,7 @@ const ManageAdmin = () => {
     if (!allow) return;
 
     try {
-      await axios.delete(`${API_BASE_URL}/users/${id}`);
+      await api.delete(`/users/${id}`);
       setAdmins((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
       console.error("Failed to delete admin:", err);
@@ -151,7 +150,7 @@ const ManageAdmin = () => {
                     paginatedAdmins.map((user) => (
                       <tr key={user.id}>
                         <td className="product-info admin-profile">
-                          <img src={AdminProfile} alt="profile" />
+                          <img src={`/uploads/${user.img}`} alt="profile" />
                           <span>{user.name || "-"}</span>
                         </td>
                         <td>{user.email || "-"}</td>
