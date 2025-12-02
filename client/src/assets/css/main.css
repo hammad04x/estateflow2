@@ -329,10 +329,14 @@ button {
   border-color: var(--primary-btn-bg);
   color: var(--primary-btn-bg);
 }
-.table-footer-pagination .pagination.active {
+.table-footer-pagination .pagination li.active {
   background-color: var(--primary-btn-bg);
-  color: var(--white-color);
+  color: var(--white-color) !important;
+  border-color: var(--primary-btn-bg);
+  font-weight: 600;
+  transform: scale(1.05);
 }
+
 .table-footer-pagination .pagination .arrow {
   border-color: 2px solid var(--primary-btn-bg) !important;
   color: var(--primary-btn-bg) !important;

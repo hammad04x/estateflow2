@@ -12,13 +12,20 @@ import api from "../../../api/axiosInstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const PAGE_SIZE = 6 // ✅ same idea as ManageAdmin
+
 const Properties = () => {
   const [activeTab, setActiveTab] = useState("All Properties");
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isTablet, setIsTablet] = useState(window.innerWidth >= 768 && window.innerWidth < 1024);
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth >= 768 && window.innerWidth < 1024
+  );
+
+  // ✅ pagination state
+  const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
 
@@ -54,7 +61,9 @@ const Properties = () => {
 
   const handleDeleteClick = async (e, property) => {
     e.stopPropagation();
-    const ok = window.confirm(`Are you sure you want to delete "${property.title}"? This action cannot be undone.`);
+    const ok = window.confirm(
+      `Are you sure you want to delete "${property.title}"? This action cannot be undone.`
+    );
     if (!ok) return;
 
     try {
@@ -77,17 +86,28 @@ const Properties = () => {
     navigate(`/admin/properties/edit/${property.id}`);
   };
 
+  // ✅ filter same as before
   const filtered = properties.filter((p) =>
     activeTab === "All Properties"
       ? true
       : activeTab === "Available"
-        ? p.status === "available"
-        : activeTab === "Reserved"
-          ? p.status === "reserved"
-          : activeTab === "Sold"
-            ? p.status === "sold"
-            : true
+      ? p.status === "available"
+      : activeTab === "Reserved"
+      ? p.status === "reserved"
+      : activeTab === "Sold"
+      ? p.status === "sold"
+      : true
   );
+
+  // ✅ PAGINATION (same pattern as ManageAdmin)
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+
+  const paginated = filtered.slice(startIndex, startIndex + PAGE_SIZE);
+
+  const changePage = (p) => {
+    if (p >= 1 && p <= totalPages) setCurrentPage(p);
+  };
 
   return (
     <>
@@ -102,26 +122,46 @@ const Properties = () => {
 
         <div className="admin-panel-header-tabs">
           <button
-            className={`admin-panel-header-tab ${activeTab === "All Properties" ? "active" : ""}`}
-            onClick={() => setActiveTab("All Properties")}
+            className={`admin-panel-header-tab ${
+              activeTab === "All Properties" ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab("All Properties");
+              setCurrentPage(1); // ✅ reset page on tab change
+            }}
           >
             All
           </button>
           <button
-            className={`admin-panel-header-tab ${activeTab === "Available" ? "active" : ""}`}
-            onClick={() => setActiveTab("Available")}
+            className={`admin-panel-header-tab ${
+              activeTab === "Available" ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab("Available");
+              setCurrentPage(1);
+            }}
           >
             Available
           </button>
           <button
-            className={`admin-panel-header-tab ${activeTab === "Reserved" ? "active" : ""}`}
-            onClick={() => setActiveTab("Reserved")}
+            className={`admin-panel-header-tab ${
+              activeTab === "Reserved" ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab("Reserved");
+              setCurrentPage(1);
+            }}
           >
             Reserved
           </button>
           <button
-            className={`admin-panel-header-tab ${activeTab === "Sold" ? "active" : ""}`}
-            onClick={() => setActiveTab("Sold")}
+            className={`admin-panel-header-tab ${
+              activeTab === "Sold" ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab("Sold");
+              setCurrentPage(1);
+            }}
           >
             Sold
           </button>
@@ -134,8 +174,7 @@ const Properties = () => {
               <thead>
                 <tr>
                   <th style={{ width: "24%" }}>Property</th>
-                  <th style={{ width: "10%" }}>ID</th>
-                  <th style={{ width: "12%" }}>Address</th>
+                  <th style={{ width: "22%" }}>Address</th>
                   <th style={{ width: "8%" }}>Price</th>
                   <th style={{ width: "8%" }}>Status</th>
                   <th style={{ width: "14%" }}>Added</th>
@@ -145,39 +184,81 @@ const Properties = () => {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
+                    <td
+                      colSpan={7}
+                      style={{ textAlign: "center", padding: 40 }}
+                    >
                       Loading...
                     </td>
                   </tr>
-                ) : filtered.length > 0 ? (
-                  filtered.map((p) => (
-                    <tr key={p.id} className="clickable-row" onClick={() => openDetails(p)}>
+                ) : paginated.length > 0 ? (
+                  paginated.map((p) => (
+                    <tr
+                      key={p.id}
+                      className="clickable-row"
+                      onClick={() => openDetails(p)}
+                    >
                       <td className="product-info">
                         <img
-                          src={`/uploads/${p.image || "defaultpropertyimage.png"}`}
+                          src={`/uploads/${
+                            p.image || "defaultpropertyimage.png"
+                          }`}
                           alt={p.title}
-                          style={{ width: 72, height: 48, objectFit: "cover", borderRadius: 6, marginRight: 12 }}
+                          style={{
+                            width: 72,
+                            height: 48,
+                            objectFit: "cover",
+                            borderRadius: 6,
+                            marginRight: 12,
+                          }}
                         />
                         <span>{p.title}</span>
                       </td>
-                      <td className="product-stock-keeping-unit">{p.id}</td>
                       <td>{p.address}</td>
-                      <td style={{ fontWeight: 600, color: "var(--primary-btn-bg)" }}>₹{p.price}</td>
+                      <td
+                        style={{
+                          fontWeight: 600,
+                          color: "var(--primary-btn-bg)",
+                        }}
+                      >
+                        ₹{p.price}
+                      </td>
                       <td>
                         <span
-                          className={`status ${p.status === "available" ? "published" : p.status === "reserved" ? "low-stock" : "out-of-stock"
-                            }`}
+                          className={`status ${
+                            p.status === "available"
+                              ? "published"
+                              : p.status === "reserved"
+                              ? "low-stock"
+                              : "out-of-stock"
+                          }`}
                         >
                           {p.status}
                         </span>
                       </td>
-                      <td>{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "-"}</td>
+                      <td>
+                        {p.createdAt
+                          ? new Date(p.createdAt).toLocaleDateString()
+                          : "-"}
+                      </td>
                       <td className="actions">
-                        <IoPencil onClick={(e) => onEdit(e, p)} style={{ cursor: "pointer" }} title="Edit" />
-                        <IoIosEye onClick={() => openDetails(p)} style={{ cursor: "pointer", marginLeft: 8 }} title="View" />
+                        <IoPencil
+                          onClick={(e) => onEdit(e, p)}
+                          style={{ cursor: "pointer" }}
+                          title="Edit"
+                        />
+                        <IoIosEye
+                          onClick={() => openDetails(p)}
+                          style={{ cursor: "pointer", marginLeft: 8 }}
+                          title="View"
+                        />
                         <MdDeleteForever
                           onClick={(e) => handleDeleteClick(e, p)}
-                          style={{ cursor: "pointer", marginLeft: 8, color: "var(--red-color)" }}
+                          style={{
+                            cursor: "pointer",
+                            marginLeft: 8,
+                            color: "var(--red-color)",
+                          }}
                           title="Delete"
                         />
                       </td>
@@ -185,7 +266,14 @@ const Properties = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: "center", padding: 40, opacity: 0.6 }}>
+                    <td
+                      colSpan={7}
+                      style={{
+                        textAlign: "center",
+                        padding: 40,
+                        opacity: 0.6,
+                      }}
+                    >
                       No properties found
                     </td>
                   </tr>
@@ -197,11 +285,20 @@ const Properties = () => {
           {/* Mobile / Tablet cards */}
           {(isMobile || isTablet) && (
             <div className="cardlist" style={{ padding: 12 }}>
-              {filtered.length > 0 ? (
-                filtered.map((p) => (
-                  <article key={p.id} className="card-row" onClick={() => openDetails(p)}>
+              {paginated.length > 0 ? (
+                paginated.map((p) => (
+                  <article
+                    key={p.id}
+                    className="card-row"
+                    onClick={() => openDetails(p)}
+                  >
                     <div className="card-left">
-                      <img src={`/uploads/${p.image || "defaultpropertyimage.png"}`} alt={p.title} />
+                      <img
+                        src={`/uploads/${
+                          p.image || "defaultpropertyimage.png"
+                        }`}
+                        alt={p.title}
+                      />
                     </div>
                     <div className="card-middle">
                       <div className="card-title">{p.title}</div>
@@ -209,8 +306,13 @@ const Properties = () => {
                     </div>
                     <div className="card-right">
                       <div
-                        className={`count-pill ${p.status === "available" ? "published" : p.status === "reserved" ? "low-stock" : "out-of-stock"
-                          }`}
+                        className={`count-pill ${
+                          p.status === "available"
+                            ? "published"
+                            : p.status === "reserved"
+                            ? "low-stock"
+                            : "out-of-stock"
+                        }`}
                       >
                         ₹{p.price}
                       </div>
@@ -223,28 +325,48 @@ const Properties = () => {
             </div>
           )}
 
-          {/* footer pagination (UI only) */}
+          {/* ✅ footer pagination (now functional) */}
           <div className="table-footer-pagination">
             <span>
-              Showing {filtered.length === 0 ? 0 : 1} - {filtered.length} from {properties.length}
+              Showing{" "}
+              {filtered.length === 0 ? 0 : startIndex + 1}-
+              {Math.min(startIndex + PAGE_SIZE, filtered.length)} from{" "}
+              {filtered.length}
             </span>
             <ul className="pagination">
-              <li className="arrow">
+              <li
+                className="arrow"
+                onClick={() => changePage(currentPage - 1)}
+              >
                 <HiOutlineArrowLeft />
               </li>
-              <li className="">01</li>
-              <li>02</li>
-              <li>03</li>
-              <li>04</li>
-              <li>05</li>
-              <li className="arrow">
+
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <li
+                  key={i}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => changePage(i + 1)}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </li>
+              ))}
+
+              <li
+                className="arrow"
+                onClick={() => changePage(currentPage + 1)}
+              >
                 <HiOutlineArrowRight />
               </li>
             </ul>
           </div>
         </div>
 
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar theme="colored" />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          theme="colored"
+        />
       </main>
     </>
   );
