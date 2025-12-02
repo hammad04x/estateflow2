@@ -13,7 +13,7 @@ import AdminProfile from "../../../assets/image/dash-profile.png";
 // axios instance
 import api from "../../../api/axiosInstance";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 const ManageAdmin = () => {
   const [admins, setAdmins] = useState([]);
