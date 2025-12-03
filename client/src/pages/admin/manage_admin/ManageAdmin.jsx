@@ -179,13 +179,13 @@ const ManageAdmin = () => {
               <table>
                 <thead>
                   <tr>
-                    <th style={{ width: "22%" }}>Name</th>
-                    <th style={{ width: "18%" }}>Email</th>
-                    <th style={{ width: "14%" }}>Phone</th>
-                    <th style={{ width: "16%" }}>Roles</th>
+                    <th style={{ width: "17%" }}>Name</th>
+                    <th style={{ width: "23%" }}>Email</th>
+                    <th style={{ width: "10%" }}>Phone</th>
+                    <th style={{ width: "10%" }}>Roles</th>
                     <th style={{ width: "10%" }}>Status</th>
-                    <th style={{ width: "10%" }}>Added</th>
-                    <th style={{ width: "10%" }}>Action</th>
+                    <th style={{ width: "14%" }}>Added</th>
+                    <th style={{ width: "16%" }}>Action</th>
                   </tr>
                 </thead>
 
