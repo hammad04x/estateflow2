@@ -99,8 +99,7 @@
   white-space: normal;            /* allow wrapping if very long */
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;          /* allow up to 2 lines before ellipsis */
+  display: -webkit-box;     /* allow up to 2 lines before ellipsis */
   -webkit-box-orient: vertical;
 }
 
@@ -190,7 +189,6 @@
 
   .common-card__title {
     font-size: 15px;
-    -webkit-line-clamp: 2;
   }
 
   .common-card__subtitle {

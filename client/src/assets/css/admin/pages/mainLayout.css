@@ -178,17 +178,17 @@
 .ma-search-icon {
   position: absolute;
   left: 12px;
-  top: 50%;
+  top: 55%;
   transform: translateY(-50%);
-  font-size: 18px;
+  font-size: 24px;
   color: var(--primary-font-color);
   pointer-events: none;
 }
 
 .ma-search-input {
   width: 100%;
-  padding: 10px 40px;
-  font-size: 14px;
+  padding: 15px 40px;
+  font-size: 16px;
   border-radius: 8px;
   border: 1px solid var(--primary-border-color);
   background: var(--white-color);
