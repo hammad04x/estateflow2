@@ -1,6 +1,6 @@
 // src/pages/admin/manage/ManageAdmin.jsx
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 import { IoIosEye } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
@@ -115,10 +115,10 @@ const ManageAdmin = () => {
   const formatDate = (d) =>
     d
       ? new Date(d).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
       : "-";
 
   return (
@@ -244,7 +244,10 @@ const ManageAdmin = () => {
                           {activeTab === "All" ? (
                             <>
                               <IoPencil onClick={() => handleEdit(user)} />
-                              <IoIosEye onClick={() => handleView(user)} />
+                              <NavLink to={"/admin/user-dashboard"}>
+
+                                <IoIosEye  />
+                              </NavLink>
                               <MdDeleteForever onClick={() => moveToTrash(user.id)} />
                             </>
                           ) : (
