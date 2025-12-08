@@ -46,8 +46,9 @@
 }
 
 .add-form-header .back-arrow-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,9 +56,7 @@
   border: 1px solid var(--primary-border-color);
   border-radius: 10px;
   color: #333;
-  font-size: 20px;
   cursor: pointer;
-  flex-shrink: 0;
   transition: all 0.2s;
 }
 
@@ -76,23 +75,22 @@
 /* === HAMBURGER ICON – Mobile Only === */
 .form-hamburger-btn {
   display: none;
-  width: 44px;
-  height: 44px;
-  background: white;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
   border: 2px solid var(--primary-border-color);
   border-radius: 10px;
-  color: var(--primary-btn-bg);
-  font-size: 22px;
+  color: var(--white-color);
   cursor: pointer;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  background-color: var(--primary-btn-bg);
 }
 
 .form-hamburger-btn:hover {
-  background: var(--primary-btn-bg);
-  color: white;
-  border-color: var(--primary-btn-bg);
+  background: var(--primary-border-color);
+  color: var(--primary-btn-bg);
   transform: scale(1.03);
 }
 

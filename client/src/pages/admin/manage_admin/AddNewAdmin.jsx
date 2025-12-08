@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "../layout/Sidebar";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import { FiMenu } from "react-icons/fi";
@@ -11,6 +11,7 @@ import "../../../assets/css/admin/common/form.css";
 
 const AddNewAdmin = () => {
   const navigate = useNavigate();
+  const fileRef = useRef(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ const AddNewAdmin = () => {
   const [status, setStatus] = useState("active");
   const [password, setPassword] = useState("");
   const [profileFile, setProfileFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(""); // Live preview
 
   const [roles, setRoles] = useState([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState([]);
@@ -29,16 +31,24 @@ const AddNewAdmin = () => {
   const handleProfileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     if (!allowedTypes.includes(file.type)) {
       toast.error("Only JPG, PNG, and WEBP images are allowed.");
       e.target.value = "";
       return;
     }
+
+    // Revoke old preview
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setProfileFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const handleButtonClick = () => {
-    document.getElementById("imageInputFile").click();
+    fileRef.current?.click();
   };
 
   const handleRoleToggle = (roleId) => {
@@ -52,6 +62,13 @@ const AddNewAdmin = () => {
   const handleHamburgerClick = () => {
     if (window.toggleAdminSidebar) window.toggleAdminSidebar();
   };
+
+  // Cleanup preview on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -112,7 +129,6 @@ const AddNewAdmin = () => {
       <Sidebar />
 
       <main className="admin-panel-header-div no-navbar">
-        {/* Modern Header */}
         <div className="add-form-header">
           <Link to="/admin/manage-clients" className="back-arrow-btn">
             <HiOutlineArrowLeft />
@@ -124,12 +140,6 @@ const AddNewAdmin = () => {
         </div>
 
         <div className="form-content-after-header">
-                        <div className="desktop-save-wrapper">
-                <button className="desktop-save-btn" onClick={handleSubmit} disabled={submitting}>
-                  <MdSave />
-                  {submitting ? "Saving..." : "Save Client"}
-                </button>
-              </div>
           <form onSubmit={handleSubmit} className="form-layout">
             {/* Left Column */}
             <div>
@@ -157,16 +167,46 @@ const AddNewAdmin = () => {
                 </div>
               </div>
 
+              {/* Profile Photo with Preview */}
               <div className="form-card">
                 <h6>Profile Photo</h6>
                 <div className="upload-box" onClick={handleButtonClick}>
-                  <div className="upload-icon">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1829/1829586.png" alt="upload" />
-                  </div>
-                  <p className="upload-text">
-                    {profileFile ? "Image selected" : "Click to upload photo"}
-                  </p>
-                  <input id="imageInputFile" type="file" accept="image/*" onChange={handleProfileChange} style={{ display: "none" }} />
+                  {previewUrl ? (
+                    <div className="image-preview-container">
+                      <img
+                        src={previewUrl}
+                        alt="Profile preview"
+                        style={{
+                          width: "100%",
+                          maxWidth: 240,
+                          height: 240,
+                          objectFit: "cover",
+                          borderRadius: 16,
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                        }}
+                        className="image-preview-img profile-preview-img"
+                      />
+                      <p style={{ marginTop: 14, fontSize: 13, color: "#555" }} className="image-preview-text">Image selected – Click to change</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="upload-icon">
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/1829/1829586.png"
+                          alt="upload"
+                        />
+                      </div>
+                      <p className="upload-text">Click to upload photo</p>
+                    </>
+                  )}
+                  <input
+                    ref={fileRef}
+                    id="imageInputFile"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfileChange}
+                    style={{ display: "none" }}
+                  />
                 </div>
               </div>
             </div>
@@ -205,6 +245,14 @@ const AddNewAdmin = () => {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Desktop Save Button */}
+              <div className="desktop-save-wrapper">
+                <button className="desktop-save-btn" onClick={handleSubmit} disabled={submitting}>
+                  <MdSave />
+                  {submitting ? "Saving..." : "Save Client"}
+                </button>
               </div>
             </div>
           </form>

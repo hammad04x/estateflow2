@@ -20,6 +20,7 @@ const EditAdmin = () => {
   const [status, setStatus] = useState("active");
   const [password, setPassword] = useState("");
   const [profileFile, setProfileFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(""); // For live preview
 
   const [roles, setRoles] = useState([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState([]);
@@ -31,12 +32,20 @@ const EditAdmin = () => {
   const handleProfileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     if (!allowedTypes.includes(file.type)) {
       toast.error("Only JPG, PNG, and WEBP images are allowed.");
       e.target.value = "";
       return;
     }
+
+    // Revoke previous preview URL to prevent memory leaks
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setProfileFile(file);
+    setPreviewUrl(URL.createObjectURL(file)); // Generate new preview
   };
 
   const handleButtonClick = () => {
@@ -52,6 +61,15 @@ const EditAdmin = () => {
   const handleHamburgerClick = () => {
     if (window.toggleAdminSidebar) window.toggleAdminSidebar();
   };
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   useEffect(() => {
     if (!admin) {
@@ -150,12 +168,6 @@ const EditAdmin = () => {
         </div>
 
         <div className="form-content-after-header">
-          <div className="desktop-save-wrapper">
-            <button className="desktop-save-btn" onClick={handleSubmit} disabled={submitting}>
-              <MdSave />
-              {submitting ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
           <form onSubmit={handleSubmit} className="form-layout">
             <div>
               <div className="form-card">
@@ -181,22 +193,60 @@ const EditAdmin = () => {
               <div className="form-card">
                 <h6>Profile Photo</h6>
                 <div className="upload-box" onClick={handleButtonClick}>
-                  {admin.img && !profileFile ? (
+                  {previewUrl ? (
                     <div style={{ textAlign: "center" }}>
-                      <img src={`/uploads/${admin.img}`} alt="Current" style={{ width: "100%", maxWidth: 200, borderRadius: 12 }} />
-                      <p style={{ marginTop: 10, fontSize: 13, color: "#555" }}>Click to change</p>
+                      <img
+                        src={previewUrl}
+                        alt="New profile preview"
+                        style={{
+                          width: "100%",
+                          maxWidth: 240,
+                          height: 240,
+                          objectFit: "cover",
+                          borderRadius: 16,
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                        }}
+                      />
+                      <p style={{ marginTop: 14, fontSize: 13, color: "#555" }}>
+                        New image – Click to change
+                      </p>
                     </div>
-                  ) : profileFile ? (
-                    <p style={{ color: "#f6a623", fontWeight: 600 }}>New image selected</p>
+                  ) : admin.img ? (
+                    <div style={{ textAlign: "center" }}>
+                      <img
+                        src={`/uploads/${admin.img}`}
+                        alt="Current profile"
+                        style={{
+                          width: "100%",
+                          maxWidth: 240,
+                          height: 240,
+                          objectFit: "cover",
+                          borderRadius: 16,
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                        }}
+                      />
+                      <p style={{ marginTop: 14, fontSize: 13, color: "#555" }}>
+                        Current photo – Click to replace
+                      </p>
+                    </div>
                   ) : (
                     <>
                       <div className="upload-icon">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1829/1829586.png" alt="upload" />
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/1829/1829586.png"
+                          alt="upload"
+                        />
                       </div>
                       <p className="upload-text">Click to upload photo</p>
                     </>
                   )}
-                  <input id="editImageInputFile" type="file" accept="image/*" onChange={handleProfileChange} style={{ display: "none" }} />
+                  <input
+                    id="editImageInputFile"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfileChange}
+                    style={{ display: "none" }}
+                  />
                 </div>
               </div>
             </div>
@@ -234,6 +284,13 @@ const EditAdmin = () => {
                     </div>
                   )}
                 </div>
+              </div>
+
+              <div className="desktop-save-wrapper">
+                <button className="desktop-save-btn" onClick={handleSubmit} disabled={submitting}>
+                  <MdSave />
+                  {submitting ? "Saving..." : "Save Changes"}
+                </button>
               </div>
             </div>
           </form>

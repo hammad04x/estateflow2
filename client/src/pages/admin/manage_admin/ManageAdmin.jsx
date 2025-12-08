@@ -60,7 +60,6 @@ const ManageAdmin = () => {
     loadData();
   }, []);
 
-  /* actions (moveToTrash, restore, delete) - keep as before */
   const moveToTrash = async (id) => {
     try {
       await api.put(`/trash-user/${id}`, { status: "trash" });

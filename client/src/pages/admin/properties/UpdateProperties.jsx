@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../layout/Sidebar";
 import { HiOutlineArrowLeft } from "react-icons/hi";
-import { FiMenu } from "react-icons/fi"; // Same icon as navbar
+import { FiMenu } from "react-icons/fi";
 import { MdSave } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../../api/axiosInstance";
@@ -21,8 +21,9 @@ const EditProperty = () => {
     price: "",
     status: "available",
     image: null,
-    existingImage: null,
+    existingImage: null, // Will store filename only
   });
+  const [previewUrl, setPreviewUrl] = useState(""); // For new image preview
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
@@ -43,7 +44,7 @@ const EditProperty = () => {
           price: data.price || "",
           status: data.status || "available",
           image: null,
-          existingImage: data.image || null,
+          existingImage: data.image || null, // Store filename only (e.g., "prop123.jpg")
         });
       } catch (err) {
         console.error("Fetch error:", err);
@@ -60,9 +61,16 @@ const EditProperty = () => {
   };
 
   const handleFile = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setForm((p) => ({ ...p, image: f }));
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Revoke old preview
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    setForm((p) => ({ ...p, image: file }));
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const isValid = () => form.title.trim() && form.price && form.address.trim();
@@ -92,12 +100,16 @@ const EditProperty = () => {
     }
   };
 
-  // Toggle sidebar (same function as navbar)
   const handleHamburgerClick = () => {
-    if (window.toggleAdminSidebar) {
-      window.toggleAdminSidebar();
-    }
+    if (window.toggleAdminSidebar) window.toggleAdminSidebar();
   };
+
+  // Cleanup preview on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   if (fetching) {
     return (
@@ -117,101 +129,81 @@ const EditProperty = () => {
       <Sidebar />
 
       <main className="admin-panel-header-div no-navbar">
-        {/* Header: Back Arrow + Title + Hamburger (mobile only) */}
         <div className="add-form-header">
           <Link to="/admin/properties" className="back-arrow-btn">
             <HiOutlineArrowLeft />
           </Link>
           <h5>Edit Property</h5>
-
-          {/* Hamburger Icon – Mobile Only */}
-          <button
-            className="form-hamburger-btn"
-            onClick={handleHamburgerClick}
-            aria-label="Toggle sidebar"
-          >
+          <button className="form-hamburger-btn" onClick={handleHamburgerClick} aria-label="Toggle sidebar">
             <FiMenu />
           </button>
         </div>
 
-        {/* Form Content */}
         <div className="form-content-after-header">
-          <div className="desktop-save-wrapper">
-                <button
-                  className="desktop-save-btn"
-                  onClick={handleSubmit}
-                  disabled={!isValid() || loading}
-                >
-                  <MdSave />
-                  {loading ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
           <form onSubmit={handleSubmit} className="form-layout">
-            {/* Left Column */}
             <div>
               <div className="form-card">
                 <h6>General Information</h6>
                 <div className="form-group">
                   <label>Property Title *</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    placeholder="Type property title here..."
-                  />
+                  <input type="text" name="title" value={form.title} onChange={handleChange} placeholder="Type property title here..." />
                 </div>
                 <div className="form-group">
                   <label>Description</label>
-                  <textarea
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    placeholder="Type property description here..."
-                  />
+                  <textarea name="description" value={form.description} onChange={handleChange} placeholder="Type property description here..." />
                 </div>
                 <div className="form-group">
                   <label>Address *</label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={form.address}
-                    onChange={handleChange}
-                    placeholder="Type property address..."
-                  />
+                  <input type="text" name="address" value={form.address} onChange={handleChange} placeholder="Type property address..." />
                 </div>
               </div>
 
               <div className="form-card">
                 <h6>Media</h6>
-                <div
-                  className="upload-box"
-                  onClick={() => fileRef.current?.click()}
-                >
-                  {form.existingImage && !form.image ? (
-                    <div style={{ marginBottom: 12 }}>
+                <div className="upload-box" onClick={() => fileRef.current?.click()}>
+                  {previewUrl ? (
+                    <div style={{ textAlign: "center" }}>
                       <img
-                        src={form.existingImage}
+                        src={previewUrl}
+                        alt="New property preview"
+                        style={{
+                          width: "100%",
+                          maxWidth: 300,
+                          height: 200,
+                          objectFit: "cover",
+                          borderRadius: 16,
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                          margin: "0 auto",
+                          display: "block",
+                        }}
+                      />
+                      <p style={{ marginTop: 14, fontSize: 13, color: "#555", textAlign: "center" }}>
+                        New image selected – Click to change
+                      </p>
+                    </div>
+                  ) : form.existingImage ? (
+                    <div style={{ textAlign: "center" }}>
+                      <img
+                        src={`/uploads/${form.existingImage}`}
                         alt="Current property"
                         style={{
                           width: "100%",
                           maxWidth: 300,
-                          height: 180,
+                          height: 200,
                           objectFit: "cover",
-                          borderRadius: 12,
+                          borderRadius: 16,
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
                           margin: "0 auto",
                           display: "block",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        }}
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/300x200?text=Image+Not+Found";
                         }}
                       />
-                      <p style={{ margin: "14px 0 0", fontSize: 13, color: "#555", textAlign: "center" }}>
-                        Click to replace image
+                      <p style={{ marginTop: 14, fontSize: 13, color: "#555", textAlign: "center" }}>
+                        Current image – Click to replace
                       </p>
                     </div>
-                  ) : form.image ? (
-                    <p style={{ color: "#f6a623", fontWeight: 600, fontSize: 14 }}>
-                      New image selected
-                    </p>
                   ) : (
                     <>
                       <div className="upload-icon">
@@ -220,7 +212,7 @@ const EditProperty = () => {
                           alt="upload"
                         />
                       </div>
-                      <p className="upload-text">Add Thumbnail Image</p>
+                      <p className="upload-text">Click to upload image</p>
                     </>
                   )}
                   <input
@@ -234,19 +226,12 @@ const EditProperty = () => {
               </div>
             </div>
 
-            {/* Right Column */}
-            <div>
+            <div className="right-side-form-section">
               <div className="form-card">
                 <h6>Pricing & Status</h6>
                 <div className="form-group">
                   <label>Base Price *</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={form.price}
-                    onChange={handleChange}
-                    placeholder="Type base price here..."
-                  />
+                  <input type="number" name="price" value={form.price} onChange={handleChange} placeholder="Type base price here..." />
                 </div>
                 <div className="form-group">
                   <label>Status</label>
@@ -257,11 +242,17 @@ const EditProperty = () => {
                   </select>
                 </div>
               </div>
+
+              <div className="desktop-save-wrapper">
+                <button className="desktop-save-btn" onClick={handleSubmit} disabled={!isValid() || loading}>
+                  <MdSave />
+                  {loading ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
             </div>
           </form>
         </div>
 
-        {/* Mobile Sticky Save Button */}
         <div className="sticky-bottom-save">
           <button onClick={handleSubmit} disabled={!isValid() || loading}>
             {loading ? "Saving..." : "Save Changes"}
