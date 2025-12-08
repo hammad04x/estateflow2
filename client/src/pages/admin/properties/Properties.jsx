@@ -16,7 +16,7 @@ import CommonCard from "../common/CommonCard";
 const PAGE_SIZE = 6;
 
 const Properties = () => {
-  const [activeTab, setActiveTab] = useState("All Properties");
+  const [activeTab, setActiveTab] = useState("All");
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
 

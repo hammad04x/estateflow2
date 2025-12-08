@@ -7,7 +7,7 @@
 .admin-panel-header-div .dashboard-table-container td img {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
+  border-radius: 20%;
   object-fit: cover;
   margin-right: 10px;
   display: inline-block;
