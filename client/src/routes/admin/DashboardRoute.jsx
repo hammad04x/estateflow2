@@ -21,11 +21,13 @@ import AddProperty from "../../pages/admin/properties/AddProperties";
 import EditProperty from "../../pages/admin/properties/UpdateProperties";
 import LogoutPage from "../../pages/admin/login/Logout";
 import UserDashboard from "../../pages/admin/manage_admin/UserDashboard";
+import MyProfile from "../../pages/admin/my_profile/MyProfile";
 
 const DashboardRoute = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/admin/login" replace />} />
+      <Route path="/login" element={<Navigate to="/admin/login" replace />} />
       <Route path="/admin/login" element={<Login />} />
 
 
@@ -47,6 +49,7 @@ const DashboardRoute = () => {
         <Route path="/admin/add-new_client" element={<AddNewAdmin />} />
         <Route path="/admin/edit-client" element={<EditAdmin />} />
         <Route path="/admin/user-dashboard" element={<UserDashboard />} />
+        <Route path="/admin/profile" element={<MyProfile />} />
         <Route path="/logout" element={<LogoutPage />} />
       </Route>
     </Routes>
