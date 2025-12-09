@@ -112,12 +112,12 @@
 
 /* === FORM CONTENT === */
 .form-content-after-header {
-  padding: 16px 16px 120px;
+  padding: 16px 16px 16px;
 }
 
 @media (min-width: 768px) {
   .form-content-after-header {
-    padding: 16px 16px 80px;
+    padding: 16px 16px 16px;
   }
 }
 
@@ -340,7 +340,7 @@
 @media (max-width: 767px) {
   .desktop-save-wrapper { display: none !important; }
   .sticky-bottom-save { display: block !important; }
-  .form-content-after-header { padding: 16px 12px 120px; }
+  .form-content-after-header { padding: 16px 12px 16px; }
   .add-form-header { padding: 16px 12px; }
 }
 

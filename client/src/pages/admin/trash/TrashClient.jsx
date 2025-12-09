@@ -149,7 +149,6 @@ const TrashClients = () => {
             <p>Loading...</p>
           ) : (
             <>
-              {/* ---------- Responsive card list (mobile/tablet) ---------- */}
               <div className="card-list">
                 {paginated.length === 0 ? (
                   <div className="ma-empty">No admins in trash</div>
