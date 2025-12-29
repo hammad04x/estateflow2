@@ -78,3 +78,5 @@ const SellList = () => {
 };
 
 export default SellList;
+
+
