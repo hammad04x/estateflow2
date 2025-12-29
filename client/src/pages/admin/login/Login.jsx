@@ -9,6 +9,7 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -17,7 +18,6 @@ const Login = () => {
   const submitLogin = async (e) => {
     e.preventDefault();
 
-    // basic validation
     if (!email.trim() || !password.trim()) {
       setInfo("");
       setError("Please enter both email and password.");
@@ -33,16 +33,11 @@ const Login = () => {
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-
-
-      const userRes = await api.get(`/me`);
+      const userRes = await api.get("/me");
       localStorage.setItem("authUser", JSON.stringify(userRes.data.user));
-
 
       nav("/admin/manage-clients");
       setInfo("Login successful. Redirecting...");
-
-
     } catch (err) {
       const message =
         err.response?.data?.error ||
@@ -55,15 +50,11 @@ const Login = () => {
     }
   };
 
-
-
-
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
       nav("/admin/manage-clients", { replace: true });
     }
   }, []);
-
 
   return (
     <div className="login-wrapper">
@@ -78,7 +69,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Messages inside the card */}
         {error && <div className="login-alert login-alert-error">{error}</div>}
         {info && !error && (
           <div className="login-alert login-alert-info">{info}</div>
@@ -97,16 +87,27 @@ const Login = () => {
             />
           </div>
 
-          <div className="form-group">
+          {/* PASSWORD FIELD WITH TOGGLE */}
+          <div className="form-group password-group">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-input"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           <button
