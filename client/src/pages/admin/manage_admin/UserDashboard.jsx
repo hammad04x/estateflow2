@@ -13,6 +13,7 @@ function UserDashboard() {
 
     const { state } = useLocation();
     const client = state?.user;
+    console.log(client.name)
 
     const navigate = useNavigate()
 
@@ -32,7 +33,7 @@ function UserDashboard() {
                     <Link to="/admin/manage-clients" className="back-arrow-btn">
                         <HiOutlineArrowLeft />
                     </Link>
-                    <h5>John Doe</h5>
+                    <h5>{client.name}</h5>
                     <button className="form-hamburger-btn" onClick={handleHamburgerClick} aria-label="Toggle sidebar">
                         <FiMenu />
                     </button>
