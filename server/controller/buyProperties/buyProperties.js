@@ -3,9 +3,13 @@ const connection = require("../../connection/connection");
 // 🌊 get all buy properties
 const getBuyProperties = (req, res) => {
   const q = `
-    SELECT *
-    FROM buy_properties
-    ORDER BY created_at DESC
+    SELECT 
+      bp.*, 
+      p.title AS title
+    FROM buy_properties bp
+    LEFT JOIN properties p 
+      ON bp.property_id = p.id
+    ORDER BY bp.created_at DESC
   `;
 
   connection.query(q, (err, data) => {

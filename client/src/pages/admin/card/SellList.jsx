@@ -67,6 +67,7 @@ const SellList = () => {
             <ExpandableCard
               key={item.id}
               headerLeft={
+                
                 <>
                   <div className="booking-id">
                   #{index+1}
@@ -94,15 +95,15 @@ const SellList = () => {
                 </div>
               </div>
 
-              {item.details && (
+              {/* {item.details && (
                 <div className="sales-extra-content">
                   {item.details}
                 </div>
-              )}
+              )} */}
 
               <button className="cancel-booking-btn">
                 <X size={18} />
-                Cancel Booking
+                Cancel Sales
               </button>
             </ExpandableCard>
           ))}
