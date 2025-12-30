@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { ShoppingCart, TrendingUp, Package, Briefcase } from 'lucide-react';
 import '../../../assets/css/admin/pages/userDashboard.css';
-import Navbar from '../layout/Navbar';
 import Sidebar from '../layout/Sidebar';
 import purchaseSide from "../../../assets/image/purchaseSide.png";
 import saleSide from "../../../assets/image/saleSide.png";
 import inventorySide from "../../../assets/image/inventorySide.png";
-import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { HiOutlineArrowLeft } from 'react-icons/hi';
 import { FiMenu } from 'react-icons/fi';
 

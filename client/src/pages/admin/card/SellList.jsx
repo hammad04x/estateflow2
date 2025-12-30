@@ -19,6 +19,7 @@ const SellList = () => {
     try {
       const res = await api.get("/getsellproperties");
       setSells(res.data || []);
+      console.log(res.data)
     } catch (err) {
       console.error("Failed to fetch sells", err);
     } finally {
@@ -34,14 +35,14 @@ const SellList = () => {
       <Sidebar />
 
       <div className="admin-panel-header-div">
-        {sells.map((item) => (
+        {sells.map((item,index) => (
           <ExpandableCard
             key={item.id}
             defaultOpen={false}
             headerLeft={
               <>
                 <div className="booking-id">
-                  Property #{item.property_id}
+                  #{index+1}
                 </div>
                 <div className="complex-name">
                   Buyer ID: {item.buyer_id}
