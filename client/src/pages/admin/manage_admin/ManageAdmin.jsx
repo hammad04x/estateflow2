@@ -112,7 +112,7 @@ const ManageAdmin = () => {
   const handleEdit = (client) =>
     navigate("/admin/edit-client", { state: { user: client } });
   const handleView = (client) =>
-    navigate("/admin/user-dashboard", { state: { admin: client } });
+    navigate("/admin/user-dashboard", { state: { user: client } });
 
   // Filter by role + search
   const filteredClients = clients.filter((client) => {
@@ -310,7 +310,6 @@ const ManageAdmin = () => {
                         <td className="actions">
                           <IoPencil onClick={() => handleEdit(user)} />
                           <IoIosEye onClick={() => handleView(user)} />
-                          {/* 🔥 open confirm modal instead of direct API */}
                           <MdDeleteForever
                             onClick={() => openTrashConfirm(user)}
                           />

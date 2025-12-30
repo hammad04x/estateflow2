@@ -54,7 +54,7 @@ const DashboardRoute = () => {
         <Route path="/admin/trash-clients" element={<TrashClients />} />
         <Route path="/admin/user-dashboard" element={<UserDashboard />} />
         <Route path="/admin/salescard" element={<SellList />} />
-        <Route path="/admin/Buycard" element={<BuyList />} />
+        <Route path="/admin/buycard" element={<BuyList />} />
 
         <Route path="/admin/profile" element={<MyProfile />} />
         <Route path="/logout" element={<LogoutPage />} />

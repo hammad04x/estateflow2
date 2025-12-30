@@ -12,11 +12,11 @@ import { FiMenu } from 'react-icons/fi';
 function UserDashboard() {
 
     const { state } = useLocation();
-    const admin = state?.admin;
+    const client = state?.user;
 
     const navigate = useNavigate()
 
-    const handleProfile = () => navigate("/admin/profile", { state: { admin } });
+    const handleProfile = () => navigate("/admin/profile", { state: { client } });
     const handleHamburgerClick = () => {
         if (window.toggleAdminSidebar) window.toggleAdminSidebar();
     };
@@ -45,7 +45,7 @@ function UserDashboard() {
                             <div className="card-text-section">
                                 <h6>Purchase</h6>
                                 <p>You can save your ride booking View, Confirm or Cancel Bookings.</p>
-                                <NavLink to={'/admin/Buycard'}>
+                                <NavLink to={'/admin/buycard'}>
                                     <button className="card-action-btn">VIEW DETAILS</button>
                                 </NavLink>
                             </div>
@@ -116,7 +116,7 @@ function UserDashboard() {
                             <div className="card-text-section">
                                 <h6>Profile</h6>
                                 <p>You can see your Account or you can edit the profile if you want.</p>
-                                <button className="card-action-btn" onClick={() => handleProfile(admin)}>VIEW DETAILS</button>
+                                <button className="card-action-btn" onClick={() => handleProfile(client)}>VIEW DETAILS</button>
                             </div>
                             <div className="card-icon-section" >
                                 <div className="icon-wrapper" >
