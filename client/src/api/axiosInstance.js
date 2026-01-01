@@ -22,35 +22,38 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // ⛔ NEVER refresh token at /login
+    // don't retry login
     if (originalRequest.url === "/login") {
       return Promise.reject(error);
     }
 
-    // refresh flow
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const refresh = localStorage.getItem("refreshToken");
-        if (!refresh) throw new Error("No refresh");
+        if (!refresh) throw new Error("No refresh token");
 
-        const r = await axios.post("http://localhost:4500/refresh-token", {
-          refreshToken: refresh,
-        });
+        const r = await axios.post(
+          "http://localhost:4500/refresh-token",
+          { refreshToken: refresh }
+        );
 
         localStorage.setItem("accessToken", r.data.accessToken);
-        originalRequest.headers.Authorization = `Bearer ${r.data.accessToken}`;
+        originalRequest.headers.Authorization =
+          `Bearer ${r.data.accessToken}`;
 
         return api(originalRequest);
       } catch (e) {
+        // ❌ NO redirect here
         localStorage.clear();
-        window.location.href = "/admin/login";
+        return Promise.reject(error);
       }
     }
 
     return Promise.reject(error);
   }
 );
+
 
 export default api;

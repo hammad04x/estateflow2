@@ -4,14 +4,14 @@ const router = express.Router();
 const users = require("../../controller/users/user");
 const upload = require("../../middleware/fileHandler");
 const verifyToken = require("../../middleware/verifyToken");
-const checkPermission = require("../../middleware/checkPermission");
+// const checkPermission = require("../../middleware/checkPermission");
 const authorizeRole = require("../../middleware/authorizeRole");
 
 // GET all users
 router.get(
   "/users",
   verifyToken,
-  checkPermission("read_user"),
+  // checkPermission("read_user"),
   users.getUsers
 );
 
@@ -19,7 +19,7 @@ router.get(
 router.get(
   "/users/:id",
   verifyToken,
-  checkPermission("read_user"),
+  // checkPermission("read_user"),
   users.getUserById
 );
 
@@ -27,7 +27,7 @@ router.get(
 router.post(
   "/users",
   verifyToken,
-  checkPermission("create_user"),
+  // checkPermission("create_user"),
   upload.single("img"),
   users.addUser
 );
@@ -36,18 +36,20 @@ router.post(
 router.put(
   "/users/:id",
   verifyToken,
-  checkPermission("update_user"),
+  // checkPermission("update_user"),
   upload.single("img"),
   users.updateUser
 );
 
-router.put('/trash-user/:id', verifyToken,  checkPermission("update_user"), users.trashUser);
+router.put('/trash-user/:id', verifyToken, 
+  //  checkPermission("update_user"),
+    users.trashUser);
 
 // DELETE user
 router.delete(
   "/users/:id",
   verifyToken,
-  checkPermission("delete_user"),
+  // checkPermission("delete_user"),
   users.deleteUser
 );
 

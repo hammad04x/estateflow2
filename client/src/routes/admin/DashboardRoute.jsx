@@ -26,6 +26,7 @@ import SellList from "../../pages/admin/card/SellList";
 import BuyList from "../../pages/admin/card/BuyList";
 import AddSellBuy from "../../pages/admin/userDashboard/Add_sell_Buy";
 import PropertyDetail from "../../pages/admin/properties/PropertyDetail";
+import TradeList from "../../pages/admin/card/TradeList";
 
 
 const DashboardRoute = () => {
@@ -43,7 +44,7 @@ const DashboardRoute = () => {
         <Route path="/admin/properties" element={<Properties />} />
         <Route path="/admin/addproperty" element={<AddProperty />} />
         <Route path="/admin/properties/edit/:id" element={<EditProperty />} />
-        <Route path="/admin/property/:id" element={<PropertyDetail/>} />
+        <Route path="/admin/property/:id" element={<PropertyDetail />} />
         <Route path="/admin/category" element={<Category />} />
         <Route path="/admin/orders" element={<Order />} />
         <Route path="/admin/coupon" element={<Coupon />} />
@@ -56,10 +57,12 @@ const DashboardRoute = () => {
         <Route path="/admin/edit-client" element={<EditAdmin />} />
         <Route path="/admin/trash-clients" element={<TrashClients />} />
         <Route path="/admin/user-dashboard" element={<UserDashboard />} />
-        <Route path="/admin/salescard" element={<SellList />} />
+        {/* <Route path="/admin/salescard" element={<SellList />} /> */}
         <Route path="/admin/salescard/addsell" element={<AddSellBuy />} />
 
-        <Route path="/admin/buycard" element={<BuyList />} />
+        {/* <Route path="/admin/buycard" element={<BuyList />} /> */}
+        <Route path="/admin/salescard" element={<TradeList />} />
+        <Route path="/admin/buycard" element={<TradeList />} />
         <Route path="/admin/buycard/buysell" element={<AddSellBuy />} />
 
 
