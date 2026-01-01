@@ -66,7 +66,7 @@ const AddSellBuy = () => {
 
   // 🔹 fetch properties
   useEffect(() => {
-    api.get("/getproperties")
+    api.get("/getpropertiesbystatus")
       .then((res) => setProperties(res.data || []))
       .catch(() => toast.error("Failed to load properties"));
   }, []);
