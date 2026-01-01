@@ -37,9 +37,31 @@ const getBuyPropertyById = (req, res) => {
     if (!data.length)
       return res.status(404).json({ error: "not found" });
 
-    return res.status(200).json(data[0]);
+    return res.status(200).json(data);
   });
 };
+const getBuyPropertiesByUserId = (req, res) => {
+  const { id } = req.params;
+
+  const q = `
+    SELECT 
+      bp.id AS buy_id,
+      bp.amount,
+      bp.created_at,
+      p.id AS property_id,
+      p.title
+    FROM buy_properties bp
+    JOIN properties p ON bp.property_id = p.id
+    WHERE bp.seller_id = ?
+  `;
+
+  connection.query(q, [id], (err, data) => {
+    if (err) return res.status(500).json(err);
+    res.json(data);
+  });
+};
+
+
 
 // 🌱 add buy property
 const addBuyProperty = (req, res) => {
@@ -137,6 +159,7 @@ const deleteBuyProperty = (req, res) => {
 module.exports = {
   getBuyProperties,
   getBuyPropertyById,
+  getBuyPropertiesByUserId,
   addBuyProperty,
   updateBuyProperty,
   deleteBuyProperty,

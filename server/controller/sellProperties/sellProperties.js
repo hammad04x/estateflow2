@@ -58,6 +58,27 @@ const getSellPropertyById = (req, res) => {
     return res.status(200).json(data[0]);
   });
 };
+const getSellPropertiesByUserId = (req, res) => {
+  const { id } = req.params;
+
+  const q = `
+    SELECT 
+      sp.id AS buy_id,
+      sp.amount,
+      sp.created_at,
+      p.id AS property_id,
+      p.title
+    FROM sell_properties sp
+    JOIN properties p ON sp.property_id = p.id
+    WHERE sp.buyer_id = ?
+  `;
+
+  connection.query(q, [id], (err, data) => {
+    if (err) return res.status(500).json(err);
+    res.json(data);
+  });
+};
+
 
 // 🌱 add sell property
 const addSellProperty = (req, res) => {
@@ -155,6 +176,7 @@ const deleteSellProperty = (req, res) => {
 module.exports = {
   getSellProperties,
   getSellPropertyById,
+  getSellPropertiesByUserId,
   addSellProperty,
   updateSellProperty,
   deleteSellProperty,
