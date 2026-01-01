@@ -37,24 +37,44 @@ const getBuyPropertyById = (req, res) => {
     if (!data.length)
       return res.status(404).json({ error: "not found" });
 
-    return res.status(200).json(data[0]);
+    return res.status(200).json(data);
+  });
+};
+const getBuyPropertiesByUserId = (req, res) => {
+  const { id } = req.params;
+
+  const q = `
+    SELECT 
+      bp.id AS buy_id,
+      bp.amount,
+      bp.created_at,
+      p.id AS property_id,
+      p.title
+    FROM buy_properties bp
+    JOIN properties p ON bp.property_id = p.id
+    WHERE bp.seller_id = ?
+  `;
+
+  connection.query(q, [id], (err, data) => {
+    if (err) return res.status(500).json(err);
+    res.json(data);
   });
 };
 
+
+
 // 🌱 add buy property
 const addBuyProperty = (req, res) => {
-  const { property_id, seller_id, assigned_by, amount, details } = req.body;
+  const { property_id, seller_id, assigned_by, amount, details, assigned_at } = req.body;
 
   if (!property_id || !seller_id || !amount) {
-    return res.status(400).json({
-      error: "required fields missing",
-    });
+    return res.status(400).json({ error: "required fields missing" });
   }
 
   const q = `
     INSERT INTO buy_properties
-      (property_id, seller_id, assigned_by, amount, details)
-    VALUES (?, ?, ?, ?, ?)
+    (property_id, seller_id, assigned_by, amount, details, created_at)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
 
   connection.query(
@@ -65,20 +85,17 @@ const addBuyProperty = (req, res) => {
       assigned_by || null,
       amount,
       details || null,
+      assigned_at || new Date(),
     ],
     (err, result) => {
       if (err)
-        return res
-          .status(500)
-          .json({ error: "database error", details: err });
+        return res.status(500).json({ error: "database error", details: err });
 
-      return res.status(201).json({
-        message: "buy property created",
-        insertId: result.insertId,
-      });
+      res.status(201).json({ message: "buy property created" });
     }
   );
 };
+
 
 // ✨ update buy property
 const updateBuyProperty = (req, res) => {
@@ -142,6 +159,7 @@ const deleteBuyProperty = (req, res) => {
 module.exports = {
   getBuyProperties,
   getBuyPropertyById,
+  getBuyPropertiesByUserId,
   addBuyProperty,
   updateBuyProperty,
   deleteBuyProperty,

@@ -6,6 +6,7 @@ const upload = require("../../middleware/fileHandler");
 
 
 router.get("/getproperties", properties.getProperties);
+router.get("/getpropertiesbystatus", properties.getPropertiesByStatus);
 router.get("/getproperties/:id", properties.getPropertyById);
 router.post("/addproperty", upload.single("image"), properties.addProperty);
 router.put("/updateproperty/:id", upload.single("image"), properties.updateProperty);
