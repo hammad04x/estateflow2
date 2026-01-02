@@ -8,7 +8,6 @@ import api from "../../../api/axiosInstance";
 import { useActiveUser } from "../../../context/ActiveUserContext";
 import ExpandableCard from "../../../components/cards/ExpandableCard";
 
-
 const BuyList = () => {
   const [buys, setBuys] = useState([]);
   const [client, setClient] = useState(null);
@@ -53,6 +52,7 @@ const BuyList = () => {
       <Sidebar />
 
       <div className="admin-panel-header-div no-navbar">
+        {/* HEADER */}
         <div className="add-form-header">
           <Link to="/admin/user-dashboard" className="back-arrow-btn">
             <HiOutlineArrowLeft />
@@ -66,6 +66,7 @@ const BuyList = () => {
           </button>
         </div>
 
+        {/* PAGE CONTENT */}
         <div className="sales-page-container">
           <div className="sales-page-title-bar">
             <h2 className="sales-page-title">Purchace</h2>

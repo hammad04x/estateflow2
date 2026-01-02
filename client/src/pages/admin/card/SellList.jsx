@@ -9,7 +9,6 @@ import { useActiveUser } from "../../../context/ActiveUserContext";
 import ExpandableCard from "../../../components/cards/ExpandableCard";
 
 
-
 const SellList = () => {
   const [sells, setSells] = useState([]);
   const [client, setClient] = useState(null);
@@ -42,7 +41,9 @@ const SellList = () => {
 
   const handleAddSell = () => navigate("/admin/salescard/addsell");
 
-  if (loading) return <p>Loading...</p>;
+  const handleNavigateToSellForm = () => {
+    navigate("/admin/salescard/addsell", { state: { client } });
+  };
 
   const mockPayments = () => [
     { id: 1, amount: 10000, status: "Deleted", date: "11/11/2025", reason: "Hekk" },
@@ -55,6 +56,7 @@ const SellList = () => {
       <Sidebar />
 
       <div className="admin-panel-header-div no-navbar">
+        {/* HEADER */}
         <div className="add-form-header">
           <Link to="/admin/user-dashboard" className="back-arrow-btn">
             <HiOutlineArrowLeft />

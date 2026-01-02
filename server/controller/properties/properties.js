@@ -8,6 +8,13 @@ const getProperties = (req, res) => {
     return res.status(200).json(data);
   });
 };
+const getPropertiesByStatus = (req, res) => {
+  const q = "SELECT * FROM properties WHERE status = 'available'";
+  connection.query(q, (err, data) => {
+    if (err) return res.status(500).json({ error: "database error", details: err });
+    return res.status(200).json(data);
+  });
+};
 
 const getPropertyById = (req, res) => {
   const { id } = req.params;
@@ -80,6 +87,7 @@ const deleteProperty = (req, res) => {
 
 module.exports = {
   getProperties,
+  getPropertiesByStatus,
   getPropertyById,
   addProperty,
   updateProperty,
