@@ -18,7 +18,6 @@ const BuyList = () => {
   const { userId } = useActiveUser();
   const navigate = useNavigate();
 
-  // fetch user
   useEffect(() => {
     if (!userId) return;
     api.get(`/users/${userId}`).then(res => setClient(res.data));
@@ -69,7 +68,7 @@ const BuyList = () => {
 
         {/* PAGE CONTENT */}
         <div className="sales-page-container">
-6          <div className="sales-page-title-bar">
+          <div className="sales-page-title-bar">
             <h2 className="sales-page-title">Purchace</h2>
             <button className="primary-btn add-sell-btn" onClick={handleAddBuy}>
               Buy Sell
