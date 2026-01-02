@@ -57,12 +57,12 @@ const DashboardRoute = () => {
         <Route path="/admin/edit-client" element={<EditAdmin />} />
         <Route path="/admin/trash-clients" element={<TrashClients />} />
         <Route path="/admin/user-dashboard" element={<UserDashboard />} />
-        {/* <Route path="/admin/salescard" element={<SellList />} /> */}
+        <Route path="/admin/salescard" element={<SellList />} />
         <Route path="/admin/salescard/addsell" element={<AddSellBuy />} />
 
-        {/* <Route path="/admin/buycard" element={<BuyList />} /> */}
-        <Route path="/admin/salescard" element={<TradeList />} />
-        <Route path="/admin/buycard" element={<TradeList />} />
+        <Route path="/admin/buycard" element={<BuyList />} />
+        {/* <Route path="/admin/salescard" element={<TradeList />} /> */}
+        {/* <Route path="/admin/buycard" element={<TradeList />} /> */}
         <Route path="/admin/buycard/buysell" element={<AddSellBuy />} />
 
 
